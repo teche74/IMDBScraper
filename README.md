@@ -39,6 +39,19 @@ IMDBScraper is a Python-based web scraping tool designed to extract data from IM
         ├── scrape_data.py # Data scraping script
 ```
 
+## Snapshots
+
+<img src ="Screenshot 2024-06-30 110026.png">
+
+
+<img src = "Screenshot 2024-06-30 111532.png">
+
+
+<img src = "Screenshot 2024-06-30 111730.png">
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+
+

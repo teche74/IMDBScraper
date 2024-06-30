@@ -6,10 +6,7 @@ Scraping is interesting if you have ever done it! With IMDBScraper, you can extr
 
 - [About the Project](#about-the-project)
 - [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
 - [Project Structure](#project-structure)
-- [Contributing](#contributing)
 - [License](#license)
 
 ## About the Project

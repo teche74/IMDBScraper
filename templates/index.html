@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMDb Movie Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+        .movie-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .movie-card {
+            width: 200px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .movie-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .movie-card h3 {
+            margin-top: 0;
+            font-size: 18px;
+            color: #333;
+        }
+        .movie-details {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .movie-details h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .movie-details p {
+            margin: 5px 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>IMDb Movie Data</h1>
+    <form id="genreForm">
+        <label for="genre">Enter Genre:</label>
+        <input type="text" id="genre" name="genre" required>
+        <button type="submit">Show Movies</button>
+    </form>
+
+    <div id="movieList" class="movie-list">
+        <!-- Movie list will be displayed here -->
+    </div>
+
+    <div id="movieDetails" class="movie-details">
+        <!-- Movie details will be displayed here -->
+        <h2>Movie Details</h2>
+        <div id="details"></div>
+    </div>
+
+    <script>
+        const genreForm = document.getElementById('genreForm');
+        const movieListDiv = document.getElementById('movieList');
+        const movieDetailsDiv = document.getElementById('movieDetails');
+
+        genreForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const genre = document.getElementById('genre').value;
+            const response = await fetch('/movies', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `genre=${encodeURIComponent(genre)}`
+            });
+            const data = await response.json();
+            movieListDiv.innerHTML = '';
+            data.forEach(movie => {
+                const movieCard = document.createElement('div');
+                movieCard.classList.add('movie-card');
+                movieCard.innerHTML = `
+                    <img src="${movie.ImageUrl}" alt="Movie Thumbnail">
+                    <h3>${movie.movie}</h3>
+                    <button onclick="showDetails('${movie.link}')">Show Details</button>
+                `;
+                movieListDiv.appendChild(movieCard);
+            });
+        });
+
+
+        async function showDetails(link) {
+            const response = await fetch('/movie-details', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `link=${encodeURIComponent(link)}`
+            });
+            const data = await response.json();
+            const detailsDiv = document.getElementById('details');
+            detailsDiv.innerHTML = `
+                <p><strong>Movie: </strong>${data.movie_name}</p>
+                <p><strong>Duration: </strong>${data.YearDuration}</p>
+                <p><strong>Directors: </strong>${data.Directors}</p>
+                <p><strong>Writers: </strong>${data.Writers}</p>
+                <p><strong>Stars: </strong>${data.Stars}</p>
+                <p><strong>Release Date: </strong>${data.Details['Release-Date']}</p>
+                <p><strong>Country of Origin: </strong>${data.Details['Country-Origin']}</p>
+                <p><strong>Language: </strong>${data.Details['Language']}</p>
+                <p><strong>Rating: </strong>${data.Ratings[0]}</p>
+                <p><strong>Plot: </strong>${data.FilmPlot}</p>
+                <p><strong>Box Office Details:</strong></p>
+                <ul>
+                    <li><strong>Budget: </strong>${data.BoxOfficeDetails.Budget}</li>
+                    <li><strong>Gross US & Canada: </strong>${data.BoxOfficeDetails['Gross US & Canada']}</li>
+                    <li><strong>Gross Worldwide: </strong>${data.BoxOfficeDetails['Gross worldwide']}</li>
+                    <li><strong>Opening Weekend US & Canada: </strong></li>
+                    <ul>
+                        <li><strong>Collection: </strong>${data.BoxOfficeDetails['Opening weekend US & Canada'].Collection}</li>
+                        <li><strong>Date: </strong>${data.BoxOfficeDetails['Opening weekend US & Canada'].Date}</li>
+                    </ul>
+                </ul>
+            `;
+            movieDetailsDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
